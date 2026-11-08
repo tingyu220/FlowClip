@@ -1,0 +1,3 @@
+region=420x48 at (1500,1032)
+accent_pixel_hits=83
+RESULT=图标已显示在托盘区域

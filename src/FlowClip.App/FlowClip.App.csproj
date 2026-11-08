@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>FlowClip.App</RootNamespace>
+    <AssemblyName>FlowClip</AssemblyName>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <EnableDefaultEmbeddedResourceItems>true</EnableDefaultEmbeddedResourceItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlowClip.Core\FlowClip.Core.csproj" />
+    <ProjectReference Include="..\FlowClip.Windows\FlowClip.Windows.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,262 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System"
+                    xmlns:local="clr-namespace:FlowClip.App.Converters">
+
+    <!-- ===================== 设计令牌 ===================== -->
+    <CornerRadius x:Key="RadiusCard">14</CornerRadius>
+    <CornerRadius x:Key="RadiusControl">10</CornerRadius>
+    <CornerRadius x:Key="RadiusPill">999</CornerRadius>
+
+    <FontFamily x:Key="AppFontFamily">Segoe UI, Microsoft YaHei UI, PingFang SC, sans-serif</FontFamily>
+    <sys:Double x:Key="FontSizeSmall">12</sys:Double>
+    <sys:Double x:Key="FontSizeBase">14</sys:Double>
+    <sys:Double x:Key="FontSizeTitle">20</sys:Double>
+
+    <Duration x:Key="DurQuick">0:0:0.12</Duration>
+    <Duration x:Key="DurNormal">0:0:0.20</Duration>
+
+    <!-- ===================== 转换器 ===================== -->
+    <local:TypeToGlyphConverter x:Key="TypeToGlyph"/>
+    <local:TypeToBadgeBrushConverter x:Key="TypeToBadgeBrush"/>
+    <local:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+    <local:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibility"/>
+    <local:HideWhenEmptyConverter x:Key="HideWhenEmpty"/>
+    <local:FileSizeConverter x:Key="FileSize"/>
+    <local:RelativeTimeConverter x:Key="RelativeTime"/>
+    <local:FilterMatchMultiConverter x:Key="FilterMatch"/>
+    <local:FilterIsCheckedConverter x:Key="FilterIsChecked"/>
+    <local:FileIconConverter x:Key="FileIcon"/>
+    <local:FileIconVisibilityConverter x:Key="FileIconVisibility"/>
+    <local:BadgeVisibilityConverter x:Key="BadgeVisibility"/>
+    <local:ImageThumbConverter x:Key="ImageThumb"/>
+    <local:ImageThumbVisibilityConverter x:Key="ImageThumbVisibility"/>
+    <local:MissingVisibilityConverter x:Key="MissingVisibility"/>
+
+    <!-- ===================== 阴影 ===================== -->
+    <DropShadowEffect x:Key="SoftShadow" BlurRadius="22" ShadowDepth="8"
+                      Direction="270" Opacity="0.18" Color="#000000"/>
+
+    <!-- ===================== 卡片容器（ListBoxItem） ===================== -->
+    <Style x:Key="ClipCardBorderStyle" TargetType="Border">
+        <!-- 卡片不加独立阴影：整窗由 DWM 玻璃材质统一承担层级，
+             避免在长列表中为每张卡片各付一份实时模糊/投影开销（性能要求 5）。
+             层级通过背景色差 + 边框体现。 -->
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{StaticResource RadiusCard}"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Margin" Value="0,0,2,8"/>
+    </Style>
+
+    <Style x:Key="ClipListBoxItemStyle" TargetType="ListBoxItem">
+        <!-- 关闭系统默认虚线焦点框，改用清晰的键盘焦点边框 -->
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Card" Style="{StaticResource ClipCardBorderStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <!-- 选中时的左侧强调线（克制的高亮，不铺大面积高饱和蓝） -->
+                            <Rectangle x:Name="AccentBar" Grid.Column="0"
+                                       Width="3" RadiusX="1.5" RadiusY="1.5"
+                                       VerticalAlignment="Stretch" Margin="0,12,0,12"
+                                       Fill="{DynamicResource AccentBrush}" Visibility="Collapsed"/>
+                            <ContentPresenter Grid.Column="1"
+                                              Margin="14,12,14,12"
+                                              VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <!-- 选中：低饱和底色 + 淡边框 + 左侧强调线，而不是大面积高饱和蓝 -->
+                            <Setter TargetName="Card" Property="Background" Value="{DynamicResource SelectedBrush}"/>
+                            <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource SelectedBorderBrush}"/>
+                            <Setter TargetName="AccentBar" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Card" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                        <!-- 键盘焦点：清晰的边框提示，替代系统默认虚线焦点框 -->
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource SelectedBorderBrush}"/>
+                            <Setter TargetName="AccentBar" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="AccentBar" Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ClipListBoxStyle" TargetType="ListBox">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ClipListBoxItemStyle}"/>
+        <!-- 虚拟化 + 容器回收：长历史下只实例化可见范围内的卡片 -->
+        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
+        <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Recycling"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+    </Style>
+
+    <!-- ===================== 细滚动条（全局生效） ===================== -->
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="MinWidth" Value="8"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Background="Transparent">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True" ViewportSize="{TemplateBinding ViewportSize}">
+                            <Track.Thumb>
+                                <Thumb x:Name="Thumb">
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Border x:Name="ThumbBorder" CornerRadius="4"
+                                                    Background="{DynamicResource ScrollBarBrush}"
+                                                    Opacity="0.45"/>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="ThumbBorder" Property="Opacity" Value="0.85"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== 搜索框 ===================== -->
+    <Style x:Key="SearchBoxStyle" TargetType="TextBox">
+        <Setter Property="Background" Value="{DynamicResource SearchBoxBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="11,10,11,10"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeBase}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource AccentBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource RadiusControl}">
+                        <Grid>
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                            <TextBlock Text="搜索剪贴板历史…"
+                                       Foreground="{DynamicResource TextTertiaryBrush}"
+                                       Margin="{TemplateBinding Padding}"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Visibility="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource StringEmptyToVisibility}}"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== 筛选芯片按钮 ===================== -->
+    <Style x:Key="ChipButtonStyle" TargetType="ToggleButton">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,6,12,6"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Chip" CornerRadius="{StaticResource RadiusPill}"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{DynamicResource ChipBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Chip" Property="Background" Value="{DynamicResource ChipSelectedBrush}"/>
+                            <Setter TargetName="Chip" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Chip" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== 通用按钮 ===================== -->
+    <Style x:Key="IconButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="B" Background="{TemplateBinding Background}" CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="B" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== 操作按钮（原型：复制 / 保存 / 标记，TargetType=Button） ===================== -->
+    <Style x:Key="ActionButtonStyle" TargetType="Button">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ButtonBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="0,8,0,8"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="B" CornerRadius="{StaticResource RadiusPill}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="B" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="B" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

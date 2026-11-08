@@ -1,0 +1,7 @@
+before=(660,276) size=600x480
+grab_point=(960,302) expected_delta=(90,60)
+after=(750,336) actual_delta=(90,60)
+RESULT=标题栏空白处可拖动，位移符合预期
+button_point=(1324,362)
+button_drag_delta=(0,0) still_visible=True
+RESULT2=按钮上按下不会误拖动（已排除按钮区域）

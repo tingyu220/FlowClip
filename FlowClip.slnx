@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FlowClip.App/FlowClip.App.csproj" />
+    <Project Path="src/FlowClip.Core/FlowClip.Core.csproj" />
+    <Project Path="src/FlowClip.Windows/FlowClip.Windows.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FlowClip.Tests/FlowClip.Tests.csproj" />
+  </Folder>
+</Solution>

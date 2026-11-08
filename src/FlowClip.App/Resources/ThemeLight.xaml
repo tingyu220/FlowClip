@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 浅色主题画刷：亚克力未启用时，半透明面板仍提供毛玻璃观感 -->
+    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#F2F2F7" Opacity="0.82"/>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF" Opacity="0.72"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1C1C1E"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#6E6E73"/>
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#8E8E93"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="#0A84FF"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="#000000" Opacity="0.08"/>
+    <SolidColorBrush x:Key="SearchBoxBrush" Color="#FFFFFF" Opacity="0.65"/>
+    <SolidColorBrush x:Key="HoverBrush" Color="#000000" Opacity="0.05"/>
+    <SolidColorBrush x:Key="SelectedBrush" Color="#0A84FF" Opacity="0.10"/>
+    <SolidColorBrush x:Key="ChipBrush" Color="#000000" Opacity="0.04"/>
+    <SolidColorBrush x:Key="ChipSelectedBrush" Color="#0A84FF" Opacity="0.18"/>
+    <SolidColorBrush x:Key="ChipSelectedTextBrush" Color="#0A84FF"/>
+    <SolidColorBrush x:Key="ScrollBarBrush" Color="#8E8E93" Opacity="0.5"/>
+    <!-- 失效 / 警示：低饱和红，避免大面积高饱和色块 -->
+    <SolidColorBrush x:Key="DangerBrush" Color="#FF3B30" Opacity="0.85"/>
+    <!-- 选中边框：比强调色本体更淡，选中感主要交给左侧强调线表达 -->
+    <SolidColorBrush x:Key="SelectedBorderBrush" Color="#0A84FF" Opacity="0.38"/>
+    <!-- 操作按钮底色：比卡片略实的白，保证在毛玻璃面板上有清晰的点击预期 -->
+    <SolidColorBrush x:Key="ButtonBrush" Color="#FFFFFF" Opacity="0.85"/>
+</ResourceDictionary>

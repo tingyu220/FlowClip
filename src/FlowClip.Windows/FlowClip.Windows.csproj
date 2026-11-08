@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 仅依赖 Win32 API，不引入 WPF / WinForms -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>FlowClip.Windows</RootNamespace>
+    <AssemblyName>FlowClip.Windows</AssemblyName>
+    <EnableDefaultEmbeddedResourceItems>true</EnableDefaultEmbeddedResourceItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 托盘图标：作为嵌入资源，运行时提取为 .ico 文件后由 LoadImage 加载 -->
+    <EmbeddedResource Include="Assets\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlowClip.Core\FlowClip.Core.csproj" />
+  </ItemGroup>
+
+</Project>

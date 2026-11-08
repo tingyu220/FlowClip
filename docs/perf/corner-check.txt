@@ -1,0 +1,12 @@
+file=docs/screenshots/real-desktop-dark.png size=600x480 ( dpiScaleX=1 )
+  top-left: near_black_ratio=0.02
+  top-right: near_black_ratio=0.02
+  bottom-left: near_black_ratio=0.02
+  bottom-right: near_black_ratio=0.01
+
+file=docs/screenshots/real-desktop-light.png size=600x480 ( dpiScaleX=1 )
+  top-left: near_black_ratio=0.00
+  top-right: near_black_ratio=0.00
+  bottom-left: near_black_ratio=0.00
+  bottom-right: near_black_ratio=0.00
+
